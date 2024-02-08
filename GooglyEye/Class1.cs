@@ -12,6 +12,7 @@ namespace GooglyEye
     {
         public GooglyEyeMod(string modDirectory) : base(modDirectory)
         {
+            Instance = this;
         }
 
         public override string GUID => "kopie.wildfrost.googlyeye";
@@ -21,6 +22,7 @@ namespace GooglyEye
 
         public static GameObject GooglyEyePrefab;
 
+        private static GooglyEyeMod Instance;
         protected override void Load()
         {
             base.Load();
@@ -147,7 +149,7 @@ namespace GooglyEye
                 Debug.LogWarning($"Googly eyes {nameof(Card.SetName)} patch");
 
                 var data = __instance.entity.data;
-                var eyeData = Extensions.GetEyeDataForCard(data);
+                var eyeData =AddressableLoader.GetGroup<EyeData>("EyeData").Find(a=>a.cardData==data.name);
                 if (eyeData)
                 {
                     if (Eyes.TryGetValue(__instance, out var existnig))

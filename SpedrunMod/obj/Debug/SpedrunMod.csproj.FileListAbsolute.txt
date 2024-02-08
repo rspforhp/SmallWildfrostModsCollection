@@ -88,3 +88,15 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\obj\Debug\SpedrunMod.cs
 C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\obj\Debug\SpedrunMod.csproj.CopyComplete
 C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\obj\Debug\SpedrunMod.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\obj\Debug\SpedrunMod.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\SpedrunMod.dll.config
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.Mdb.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.Pdb.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.Rocks.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\MonoMod.RuntimeDetour.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\0Harmony.xml
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.Mdb.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.Pdb.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\Mono.Cecil.Rocks.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\MonoMod.RuntimeDetour.xml
+C:\Users\Miya\Desktop\CsProjects\SolutionName\SpedrunMod\bin\Debug\MonoMod.Utils.xml

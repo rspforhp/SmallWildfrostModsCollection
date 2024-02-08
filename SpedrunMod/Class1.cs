@@ -16,8 +16,23 @@ namespace Speedrun
 
         public class SpeedrunBehaviour : MonoBehaviour
         {
+            public string input;
+            public bool isOn = true;
+            private void Update()
+            {
+                if (Input.GetKeyDown(KeyCode.X))
+                {
+                    isOn = !isOn;
+                }
+            }
+
             private void OnGUI()
             {
+                if (!isOn)
+                {
+                    GUILayout.Label("Toggle speedrun ui with 'X'");
+                    return;
+                }
                 unsafe
                 {
                     var s = UnityEngine.Random.state;
@@ -26,9 +41,22 @@ namespace Speedrun
                     if (Campaign.Data != null)
                     {
                         GUILayout.TextArea("Campaign seed: " + Campaign.Data.Seed);
+                        if (string.IsNullOrEmpty(input)) input = Campaign.Data.Seed.ToString();
+                        GUILayout.Label("Input seed:");
+                        input=GUILayout.TextArea(input);
+                        if (GUILayout.Button("Set seed from input")&& int.TryParse(input,out int output))
+                        {
+                            Campaign.Data.Seed =output;
+                            SaveSystem.SaveProgressData("nextSeed", Campaign.Data.Seed);
+                            SaveSystem.SaveProgressData("seed", Campaign.Data.Seed);
+                            if (SelectLeader.FindObjectOfType<SelectLeader>() is { } leader)
+                            {
+                                this.StartCoroutine(Do(leader));
+                            }
+                        }
                         if (GUILayout.Button("Randomize"))
                         {
-                            Campaign.Data.Seed = Dead.Random.Seed();
+                            Campaign.Data.Seed =Random.Range(1000000,2000000);
                             SaveSystem.SaveProgressData("nextSeed", Campaign.Data.Seed);
                             SaveSystem.SaveProgressData("seed", Campaign.Data.Seed);
                             if (SelectLeader.FindObjectOfType<SelectLeader>() is { } leader)
@@ -115,6 +143,6 @@ namespace Speedrun
         public override string GUID => "kopie.wildfrost.speedrunmod";
         public override string[] Depends => Array.Empty<string>();
         public override string Title => "Speedrun Mod";
-        public override string Description => "Mod for speedrunners.";
+        public override string Description => "Mod for speedrunners. | Toggle with X";
     }
 }
