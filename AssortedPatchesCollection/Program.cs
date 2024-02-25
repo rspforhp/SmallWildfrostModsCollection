@@ -26,7 +26,7 @@ namespace AssortedPatchesCollection
         public Color noteColour;
         public Sprite panelSprite;
         public Color panelColor;
-        
+
         public CardData cardMention;
 
 
@@ -42,12 +42,13 @@ namespace AssortedPatchesCollection
             return cardMention?.name;
         }
 
-        public CustomCardPopup(WildfrostMod mod, string name, string iconName=default, string iconTintHex=default, string title=default, Color titleColour=default, string body=default, Color bodyColour=default, string note=default, Color noteColour=default, Sprite panelSprite=default, Color panelColor=default)
+        public CustomCardPopup(WildfrostMod mod, string name, string iconName = default, string iconTintHex = default,
+            string title = default, Color titleColour = default, string body = default, Color bodyColour = default,
+            string note = default, Color noteColour = default, Sprite panelSprite = default, Color panelColor = default)
         {
-         
-            if(titleColour==default(Color))titleColour=new Color(1f, 0.7921569f, 0.3411765f, 1f);
-            if(bodyColour==default(Color))bodyColour=Color.white;
-            if(noteColour==default(Color))noteColour= Color.gray;
+            if (titleColour == default(Color)) titleColour = new Color(1f, 0.7921569f, 0.3411765f, 1f);
+            if (bodyColour == default(Color)) bodyColour = Color.white;
+            if (noteColour == default(Color)) noteColour = Color.gray;
             this.FromMod = mod;
             this.name = name;
             this.iconName = iconName;
@@ -61,32 +62,32 @@ namespace AssortedPatchesCollection
             this.panelSprite = panelSprite;
             this.panelColor = panelColor;
         }
-        public string Name=>FromMod.GUID+"."+name;
+
+        public string Name => FromMod.GUID + "." + name;
     }
-    
+
     public class MainMod : WildfrostMod
     {
-            [HarmonyPatch(typeof(CardPopUpTarget), nameof(CardPopUpTarget.Pop), new Type[] {  })]
+        [HarmonyPatch(typeof(CardPopUpTarget), nameof(CardPopUpTarget.Pop), new Type[] { })]
         internal static class CustomPopupHandler2
         {
-       
             internal static CardPopUpPanel AddPanel(CustomCardPopup customPopup)
             {
-               
                 if (!MonoBehaviourRectSingleton<CardPopUp>.instance.activePanels.ContainsKey(customPopup.Name))
                 {
-                    var panel2= MonoBehaviourRectSingleton<CardPopUp>.instance.GetPanel<CardPopUpPanel>();
+                    var panel2 = MonoBehaviourRectSingleton<CardPopUp>.instance.GetPanel<CardPopUpPanel>();
                     panel2.gameObject.name = customPopup.Name;
                     panel2.gameObject.name = customPopup.Name;
-                    panel2.SetRoutine(customPopup.iconName,customPopup.iconTintHex,customPopup.title,customPopup.titleColour,customPopup.body,customPopup.bodyColour,customPopup.note,customPopup.noteColour,customPopup.panelSprite,customPopup.panelColor);
-                    MonoBehaviourRectSingleton<CardPopUp>.instance.activePanels.Add(customPopup.Name, (Tooltip) panel2);
+                    panel2.SetRoutine(customPopup.iconName, customPopup.iconTintHex, customPopup.title,
+                        customPopup.titleColour, customPopup.body, customPopup.bodyColour, customPopup.note,
+                        customPopup.noteColour, customPopup.panelSprite, customPopup.panelColor);
+                    MonoBehaviourRectSingleton<CardPopUp>.instance.activePanels.Add(customPopup.Name, (Tooltip)panel2);
                     return panel2;
                 }
 
                 return null;
             }
 
-     
 
             [HarmonyPostfix]
             internal static void TestPatch(CardPopUpTarget __instance)
@@ -100,7 +101,7 @@ namespace AssortedPatchesCollection
                         Instance.WriteWarn($"{cardData.name} custom data not null");
                         if (cardData.customData.TryGetValue(customPopupsKey, out var pop))
                         {
-                            Instance.WriteWarn($"Found custom popups "+pop);
+                            Instance.WriteWarn($"Found custom popups " + pop);
                             if (pop is List<CustomCardPopup> list)
                             {
                                 foreach (var popup in list)
@@ -112,10 +113,9 @@ namespace AssortedPatchesCollection
                                             CardPopUp.AddPanel(popup.cardMention);
                                     }
                                     else if (__instance.current.Add(popup.Name))
-                                        {
-                                            AddPanel(popup);
-                                        }
-                                   
+                                    {
+                                        AddPanel(popup);
+                                    }
                                 }
                             }
                         }
@@ -123,18 +123,21 @@ namespace AssortedPatchesCollection
                 }
             }
         }
-        [HarmonyPatch(typeof(InspectSystem), nameof(InspectSystem.CreatePopups), new Type[] {  })]
+
+        [HarmonyPatch(typeof(InspectSystem), nameof(InspectSystem.CreatePopups), new Type[] { })]
         internal static class CustomPopupHandler
         {
-            internal static CardPopUpPanel Popup(InspectSystem __instance,CustomCardPopup customPopup, Transform group)
+            internal static CardPopUpPanel Popup(InspectSystem __instance, CustomCardPopup customPopup, Transform group)
             {
                 if (__instance.popups.All(a => a.name != customPopup.Name))
                 {
                     // Create pop up panel
                     var panel = InspectSystem.Instantiate(__instance.popUpPrefab, group);
                     panel.gameObject.name = customPopup.Name;
-                    panel.SetRoutine(customPopup.iconName,customPopup.iconTintHex,customPopup.title,customPopup.titleColour,customPopup.body,customPopup.bodyColour,customPopup.note,customPopup.noteColour,customPopup.panelSprite,customPopup.panelColor);
-                    
+                    panel.SetRoutine(customPopup.iconName, customPopup.iconTintHex, customPopup.title,
+                        customPopup.titleColour, customPopup.body, customPopup.bodyColour, customPopup.note,
+                        customPopup.noteColour, customPopup.panelSprite, customPopup.panelColor);
+
 
                     // Add to lists
                     //__instance.currentPoppedKeywords.Add(keyword);
@@ -143,6 +146,7 @@ namespace AssortedPatchesCollection
                     // Return created popup panel
                     return panel;
                 }
+
                 return null;
             }
 
@@ -157,86 +161,82 @@ namespace AssortedPatchesCollection
                         Instance.WriteWarn($"{cardData.name} custom data not null");
                         if (cardData.customData.TryGetValue(customPopupsKey, out var pop))
                         {
-                            Instance.WriteWarn($"Found custom popups "+pop);
+                            Instance.WriteWarn($"Found custom popups " + pop);
                             if (pop is List<CustomCardPopup> list)
                             {
                                 foreach (var popup in list)
                                 {
-                                  
                                     Instance.WriteWarn($"{cardData.name} {popup}");
-                                    if(popup.cardMention&& popup.cardMention != null)
-                                        __instance.Popup(popup.cardMention, (Transform) __instance.rightPopGroup);
-                                    else   Popup(__instance,popup, (Transform) __instance.rightPopGroup);
+                                    if (popup.cardMention && popup.cardMention != null)
+                                        __instance.Popup(popup.cardMention, (Transform)__instance.rightPopGroup);
+                                    else Popup(__instance, popup, (Transform)__instance.rightPopGroup);
                                 }
                             }
                         }
                     }
-                   
                 }
             }
         }
 
-        
+
         //List<CustomCardPopup>
         public const string customPopupsKey = "customPopups";
 
-        
-        
-        
-        
-        
-        
-        [HarmonyPatch(typeof(DataFileBuilder<CardData, CardDataBuilder>), nameof(DataFileBuilder<CardData, CardDataBuilder>.OnAfterAllModBuildsEvent))]
+
+        [HarmonyPatch(typeof(DataFileBuilder<CardData, CardDataBuilder>),
+            nameof(DataFileBuilder<CardData, CardDataBuilder>.OnAfterAllModBuildsEvent))]
         internal static class AddWMITF2
         {
             [HarmonyPostfix]
             internal static void TestPatch(ref CardData d)
             {
-                
                 var data = d;
                 if (data.customData == null) data.customData = new Dictionary<string, object>();
-                if (data.ModAdded!=null &&data.TryGetCustomData(customPopupsKey, out var pop,new List<CustomCardPopup>()))
+                if (data.ModAdded != null &&
+                    data.TryGetCustomData(customPopupsKey, out var pop, new List<CustomCardPopup>()))
                 {
                     if (pop.All(a => a.Name != Instance.GUID + "." + "WMITF"))
                     {
-                        pop.Add(new CustomCardPopup(Instance,"WMITF", title:data.title, body:$"Card added by: {data.ModAdded.Title}", note:$"{data.ModAdded.GUID}"));
+                        pop.Add(new CustomCardPopup(Instance, "WMITF", title: data.title,
+                            body: $"Card added by: {data.ModAdded.Title}", note: $"{data.ModAdded.GUID}"));
                     }
                 }
             }
         }
 
 
-        
-        
-        
-        
-        [HarmonyPatch(typeof(CardDataBuilder), nameof(CardDataBuilder.IsPet), new Type[] { typeof(ChallengeData),typeof(bool) })]
+        [HarmonyPatch(typeof(CardDataBuilder), nameof(CardDataBuilder.IsPet),
+            new Type[] { typeof(ChallengeData), typeof(bool) })]
         internal static class AddToUnlocks
         {
             [HarmonyPrefix]
-            internal static bool TestPatch(ref CardDataBuilder __instance,ref CardData ____data,ref CardDataBuilder __result,ChallengeData challenge, bool value = true)
+            internal static bool TestPatch(ref CardDataBuilder __instance, ref CardData ____data,
+                ref CardDataBuilder __result, ChallengeData challenge, bool value = true)
             {
                 if (value && (challenge == null || !challenge))
                 {
                     Instance.WriteWarn($"{____data.name}'s pet unlock data is null, instantly unlocking");
                     AutoUnlockedPets.Add(____data.name);
-                    PetHutSequence.OnStart+=delegate(PetHutSequence sequence) {sequence.AddSlot(null);  };
+                    PetHutSequence.OnStart += delegate(PetHutSequence sequence) { sequence.AddSlot(null); };
                     __result = __instance;
                     return false;
                 }
+
                 return true;
             }
 
             internal static List<string> AutoUnlockedPets = new List<string>();
         }
-        [HarmonyPatch(typeof(MetaprogressionSystem), nameof(MetaprogressionSystem.GetUnlockedPets), new Type[] {  })]
+
+        [HarmonyPatch(typeof(MetaprogressionSystem), nameof(MetaprogressionSystem.GetUnlockedPets), new Type[] { })]
         internal static class FixExtra
         {
             [HarmonyPrefix]
-            internal static bool TestPatch(MetaprogressionSystem __instance,ref string[] __result)
+            internal static bool TestPatch(MetaprogressionSystem __instance, ref string[] __result)
             {
                 List<string> stringList1 = MetaprogressionSystem.Get<List<string>>("pets");
-                List<string> stringList2 = SaveSystem.LoadProgressData<List<string>>("petHutUnlocks", (List<string>) null);
+                List<string> stringList2 =
+                    SaveSystem.LoadProgressData<List<string>>("petHutUnlocks", (List<string>)null);
                 int length = Mathf.Min(stringList1.Count, 1 + (stringList2?.Count ?? 0));
                 string[] unlockedPets = new string[length];
                 for (int index = 0; index < length; ++index)
@@ -247,15 +247,16 @@ namespace AssortedPatchesCollection
                     Instance.WriteWarn($"{card}'s pet unlock data is null, instantly adding to unlocks pets");
                     Instance.WriteWarn($"{Instance.Get<CardData>(card)} instance of it");
                 }
-                __result= unlockedPets.AddRangeToArray(iter);
+
+                __result = unlockedPets.AddRangeToArray(iter);
 
                 return false;
             }
-
         }
-        
-        
+
+
         internal static MainMod Instance;
+
         public MainMod(string modDirectory) : base(modDirectory)
         {
             Instance = this;
@@ -271,11 +272,12 @@ namespace AssortedPatchesCollection
             base.Unload();
         }
 
-    
 
         public override string GUID => "!kopie.wildfrost.assorted";
         public override string[] Depends => Array.Empty<string>();
         public override string Title => "!Assorted patches";
-        public override string Description => "Mod that tweaks some stuff in the game.\n\n\n Pets with null unlock data will show up unlocked instantly.\n Custom popups library. \n What mod is this from for every modded card.";
+
+        public override string Description =>
+            "Mod that tweaks some stuff in the game.\n\n\n Pets with null unlock data will show up unlocked instantly.\n Custom popups library. \n What mod is this from for every modded card.";
     }
 }

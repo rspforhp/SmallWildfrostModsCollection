@@ -1,3 +1,4 @@
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\RussianTranslation.dll.config
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\RussianTranslation.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\RussianTranslation.pdb
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\0Harmony.dll
@@ -6,9 +7,14 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Assem
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\DeadExtensions.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\DeadRandom.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\DeadSafe.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.Mdb.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.Pdb.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.Rocks.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\MonoMod.RuntimeDetour.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\MonoMod.Utils.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Unity.Localization.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.CoreModule.dll
-C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.UI.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Rewired_Core.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\NaughtyAttributes.Core.dll
@@ -26,7 +32,6 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\FMODU
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Steamworks.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.PhysicsModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.Physics2DModule.dll
-C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\MonoMod.Utils.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.AudioModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.IMGUIModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.JSONSerializeModule.dll
@@ -83,6 +88,13 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Unity
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.XRModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.ARModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\UnityEngine.InputModule.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\0Harmony.xml
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.Mdb.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.Pdb.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\Mono.Cecil.Rocks.pdb
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\MonoMod.RuntimeDetour.xml
+C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\bin\Debug\MonoMod.Utils.xml
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\obj\Debug\RussianTranslation.csproj.AssemblyReference.cache
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\obj\Debug\RussianTranslation.csproj.CoreCompileInputs.cache
 C:\Users\Miya\Desktop\CsProjects\SolutionName\RussianTranslation\obj\Debug\RussianTranslation.csproj.CopyComplete

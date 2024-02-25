@@ -1,9 +1,8 @@
-C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.csproj.AssemblyReference.cache
-C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.csproj.CoreCompileInputs.cache
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\AssortedPatchesCollection.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\AssortedPatchesCollection.pdb
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\0Harmony.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Assembly-CSharp-firstpass.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Assembly-CSharp-Publicized.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\DeadExtensions.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\DeadRandom.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\DeadSafe.dll
@@ -13,6 +12,7 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debu
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Mono.Cecil.Rocks.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\MonoMod.RuntimeDetour.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\MonoMod.Utils.dll
+C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Unity.Localization.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.CoreModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.UI.dll
@@ -42,7 +42,6 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debu
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.ScreenCaptureModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.UnityWebRequestModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.UnityWebRequestAudioModule.dll
-C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.SharedInternalsModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.UIElementsModule.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\UnityEngine.TilemapModule.dll
@@ -95,7 +94,8 @@ C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debu
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Mono.Cecil.Rocks.pdb
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\MonoMod.RuntimeDetour.xml
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\MonoMod.Utils.xml
+C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.csproj.AssemblyReference.cache
+C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.csproj.CoreCompileInputs.cache
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.csproj.CopyComplete
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.dll
 C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\obj\Debug\AssortedPatchesCollection.pdb
-C:\Users\Miya\Desktop\CsProjects\SolutionName\AssortedPatchesCollection\bin\Debug\Assembly-CSharp-Publicized.dll
