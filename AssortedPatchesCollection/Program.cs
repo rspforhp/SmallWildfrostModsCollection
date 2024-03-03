@@ -180,29 +180,10 @@ namespace AssortedPatchesCollection
 
 
         //List<CustomCardPopup>
-        public const string customPopupsKey = "customPopups";
+        public static string customPopupsKey = "customPopups";
 
 
-        [HarmonyPatch(typeof(DataFileBuilder<CardData, CardDataBuilder>),
-            nameof(DataFileBuilder<CardData, CardDataBuilder>.OnAfterAllModBuildsEvent))]
-        internal static class AddWMITF2
-        {
-            [HarmonyPostfix]
-            internal static void TestPatch(ref CardData d)
-            {
-                var data = d;
-                if (data.customData == null) data.customData = new Dictionary<string, object>();
-                if (data.ModAdded != null &&
-                    data.TryGetCustomData(customPopupsKey, out var pop, new List<CustomCardPopup>()))
-                {
-                    if (pop.All(a => a.Name != Instance.GUID + "." + "WMITF"))
-                    {
-                        pop.Add(new CustomCardPopup(Instance, "WMITF", title: data.title,
-                            body: $"Card added by: {data.ModAdded.Title}", note: $"{data.ModAdded.GUID}"));
-                    }
-                }
-            }
-        }
+        
 
 
         [HarmonyPatch(typeof(CardDataBuilder), nameof(CardDataBuilder.IsPet),
@@ -234,13 +215,13 @@ namespace AssortedPatchesCollection
             [HarmonyPrefix]
             internal static bool TestPatch(MetaprogressionSystem __instance, ref string[] __result)
             {
-                List<string> stringList1 = MetaprogressionSystem.Get<List<string>>("pets");
-                List<string> stringList2 =
+                List<string> allPets = MetaprogressionSystem.Get<List<string>>("pets");
+                List<string> unlockedInPetHut =
                     SaveSystem.LoadProgressData<List<string>>("petHutUnlocks", (List<string>)null);
-                int length = Mathf.Min(stringList1.Count, 1 + (stringList2?.Count ?? 0));
+                int length = Mathf.Min(allPets.Count, 1 + (unlockedInPetHut?.Count ?? 0));
                 string[] unlockedPets = new string[length];
                 for (int index = 0; index < length; ++index)
-                    unlockedPets[index] = stringList1[index];
+                    unlockedPets[index] = allPets[index];
                 var iter = AddToUnlocks.AutoUnlockedPets.ToArray();
                 foreach (var card in iter)
                 {

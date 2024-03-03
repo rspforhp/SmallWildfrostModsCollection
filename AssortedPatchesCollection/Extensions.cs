@@ -11,6 +11,16 @@ namespace AssortedPatchesCollection
             sequence.RemoveAt(index);
             return sequence;
         }
+        public static bool TryGetCustomDataT<T>(this CardData data, string key, out T value, T defaultValue)
+        {
+            if (data.customData != null && data.customData.TryGetValue(key, out var obj1) && obj1 is T obj2)
+            {
+                value = obj2;
+                return true;
+            }
+            value = defaultValue;
+            return false;
+        }
 
         public static T[] RemoveAtFromArray<T>(this T[] sequence, int index) =>
             (sequence.ToList()).RemoveAtStay(index).ToArray();

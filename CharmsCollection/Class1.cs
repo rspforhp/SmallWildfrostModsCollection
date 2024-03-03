@@ -8,6 +8,19 @@ using UnityEngine;
 
 namespace CharmsCollection
 {
+    public static class Extensions
+    {
+        public static bool HasEffect<T>(this Entity card) where T : StatusEffectData
+        {
+            return card.data.startWithEffects.ToList().Any(a => a.data is T);
+        }
+
+        public static bool HasAttackEffect<T>(this Entity card) where T : StatusEffectData
+        {
+            return card.data.attackEffects.ToList().Any(a => a.data is T);
+        }
+    }
+
     public class CharmsCollectionMod : WildfrostMod
     {
         public CharmsCollectionMod(string modDirectory) : base(modDirectory)
@@ -15,14 +28,111 @@ namespace CharmsCollection
             Instance = this;
         }
 
+        public class SpeedEffectData : StatusEffectData
+        {
+        }
+
+        public class BifurcatedEffectData : StatusEffectChangeTargetMode
+        {
+        }
+
+
+        public class TargetModeBifurcated : TargetMode
+        {
+            public override Entity[] GetPotentialTargets(Entity entity, Entity target, CardContainer targetContainer)
+            {
+                var targets = new HashSet<Entity>();
+
+                // If specific target is set, use it!
+                if (target)
+                {
+                    targets.Add(target);
+                }
+                else
+                {
+                    var rows = Battle.instance.GetRowIndices(entity);
+                    if (rows.Length > 0)
+                    {
+                        for (var rowIndex = 0; rowIndex < Battle.instance.rowCount; rowIndex++)
+                        {
+                            AddTargets(entity, targets, rowIndex);
+                        }
+                    }
+                }
+
+                // Return array of target(s)
+                return targets.Count > 0
+                    ? targets.ToArray()
+                    : null;
+            }
+
+            void AddTargets(Entity entity, HashSet<Entity> targets, int rowIndex)
+            {
+                // Try to find single target in the opposing row
+                var enemies = entity.GetEnemiesInRow(rowIndex);
+                Entity target = null;
+                foreach (var t in enemies)
+                {
+                    if (t && t.enabled && t.alive && t.canBeHit)
+                    {
+                        target = t;
+                        break;
+                    }
+                }
+
+                // Add target to results
+                if (target)
+                {
+                    targets.Add(target);
+                }
+                else
+                {
+                    // If no target found, try to target the enemy *character*
+                    target = GetEnemyCharacter(entity);
+                    if (target)
+                    {
+                        targets.Add(target);
+                    }
+                }
+            }
+        }
+
+
         public override void Load()
         {
             if (Upgrades == null)
             {
+                Effects = new();
+                Effects.Add(new StatusEffectDataBuilder(this).Create<SpeedEffectData>("speed"));
+                Effects.Add(new StatusEffectDataBuilder(this).Create<BifurcatedEffectData>("bifurcated").FreeModify(
+                    delegate(StatusEffectData data)
+                    {
+                        if (data is BifurcatedEffectData bif)
+                        {
+                            var d = new TargetModeBifurcated();
+                            d.name = "TargetModeBifurcated";
+                            bif.targetMode = d;
+                        }
+                    }));
                 Upgrades = new();
                 Upgrades.Add(new CardUpgradeDataBuilder(this).CreateCharm("charm_speed").WithImage("charm_speed.png")
-                    .AddPool().SetConstraints(new TargetConstraintDoesAttack()).WithTitle("Speed charm")
+                    .AddPool().SetConstraints(new TargetConstraintIsUnit()).SubscribeToAfterAllBuildEvent(
+                        delegate(CardUpgradeData data)
+                        {
+                            data.Edit<CardUpgradeData, CardUpgradeDataBuilder>()
+                                .SetEffects(new CardData.StatusEffectStacks(this.Get<StatusEffectData>("speed"), 1));
+                        }).WithTitle("Speed charm")
                     .WithText("Cards with speed always attack before others."));
+                Upgrades.Add(new CardUpgradeDataBuilder(this).CreateCharm("charm_bifurcated")
+                    .WithImage("charm_speed.png")
+                    .AddPool().SetConstraints(new TargetConstraintIsUnit()).SubscribeToAfterAllBuildEvent(
+                        delegate(CardUpgradeData data)
+                        {
+                            data.Edit<CardUpgradeData, CardUpgradeDataBuilder>()
+                                .SetEffects(
+                                    new CardData.StatusEffectStacks(this.Get<StatusEffectData>("bifurcated"), 1));
+                        }).WithTitle("Bifurcated charm")
+                    .WithText("Attacks in both lines."));
             }
 
 
@@ -58,15 +168,15 @@ namespace CharmsCollection
                         var allUnits = Battle.GetAllUnits(__instance.player);
                         foreach (var uni in allUnits)
                         {
-                            if(uni.data.upgrades
-                               .FindAll(a => a.name == Extensions.PrefixGUID("charm_speed", Instance)).Count>0)
-                            entities.Add(uni);
+                            if (uni.data.startWithEffects.ToList()
+                                    .FindAll(a => a.data is SpeedEffectData).Count > 0)
+                                entities.Add(uni);
                         }
 
                         var orderedEnumerable = entities.OrderBy(delegate(Entity entity)
                         {
-                            return -entity.data.upgrades
-                                .FindAll(a => a.name == Extensions.PrefixGUID("charm_speed", Instance)).Count;
+                            return -entity.data.startWithEffects.ToList()
+                                .FindAll(a => a.data is SpeedEffectData).Count;
                         });
                         entities = orderedEnumerable.ToList();
                     }
@@ -74,7 +184,8 @@ namespace CharmsCollection
                     {
                         entities.RemoveAll(delegate(Entity entity)
                         {
-                           return entity.data.upgrades.FindAll(a => a.name == Extensions.PrefixGUID("charm_speed", Instance)).Count>0;
+                            return entity.data.startWithEffects.ToList()
+                                .FindAll(a => a.data is SpeedEffectData).Count > 0;
                         });
                     }
 
@@ -127,17 +238,21 @@ namespace CharmsCollection
 
 
         private List<CardUpgradeDataBuilder> Upgrades;
+        private List<StatusEffectDataBuilder> Effects;
 
         public override List<T> AddAssets<T, Y>()
         {
             var dataName = typeof(Y).Name;
             if (dataName == nameof(CardUpgradeData)) return Upgrades.Cast<T>().ToList();
+            if (dataName == nameof(StatusEffectData)) return Effects.Cast<T>().ToList();
             return null;
         }
 
         public override string GUID => "kopie.wildfrost.charmscollection";
         public override string[] Depends => Array.Empty<string>();
         public override string Title => "Charms collection";
-        public override string Description => "Mod that adds some unique charms.\n\n\n\n Adds speed charm - attack before other cards.\n";
+
+        public override string Description =>
+            "Mod that adds some unique charms.\n\n\n\n Adds speed charm - attack before other cards.\n";
     }
 }
