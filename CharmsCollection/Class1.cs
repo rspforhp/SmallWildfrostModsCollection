@@ -293,6 +293,7 @@ namespace CharmsCollection
                 clone.upgrades.AddRange(nextData.upgrades);
                 clone.forceTitle = $"{clone.title} + {nextData.title}";
                 clone.upgrades.Add(Instance.Get<CardUpgradeData>("charm_merge"));
+                clone.traits.AddRange(nextData.traits);
                 return (clone, nextData);
             }
         }
