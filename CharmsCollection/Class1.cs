@@ -5,6 +5,7 @@ using System.Linq;
 using Deadpan.Enums.Engine.Components.Modding;
 using HarmonyLib;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace CharmsCollection
 {
@@ -133,6 +134,10 @@ namespace CharmsCollection
                                     new CardData.StatusEffectStacks(this.Get<StatusEffectData>("bifurcated"), 1));
                         }).WithTitle("Bifurcated charm")
                     .WithText("Attacks in both lines."));
+                Upgrades.Add(new CardUpgradeDataBuilder(this).CreateCharm("charm_merge")
+                    .WithImage("charm_merge.png")
+                    .AddPool().WithTitle("Merge charm")
+                    .WithText("Combines with next card in deck view, gaining its stats(averaged out) and effects."));
             }
 
 
@@ -140,6 +145,157 @@ namespace CharmsCollection
         }
 
         private static CharmsCollectionMod Instance;
+
+        [HarmonyPatch(typeof(CardUpgradeData),
+            nameof(CardUpgradeData.Assign), typeof(Entity))]
+        internal static class MergeCharm
+        {
+            [HarmonyPostfix]
+            internal static IEnumerator TestPatch(IEnumerator original, CardUpgradeData __instance, Entity entity)
+            {
+                if (__instance.name !=
+                    Deadpan.Enums.Engine.Components.Modding.Extensions.PrefixGUID("charm_merge", Instance))
+                {
+                    yield return original;
+                    yield break;
+                }
+                bool og = true;
+                Instance.WriteLine($"Attaching {__instance} to {entity}");
+
+                var decks = Object.FindObjectsOfType<DeckDisplaySequence>();
+                Instance.WriteLine($"Decks {decks} {decks?.Length}");
+                foreach (var deckDisplay in decks)
+                {
+                    var active = deckDisplay.activeCardsGroup.GetGrid(entity.data);
+
+                    IEnumerator CombineSequence(CardData[] source, CardData result)
+                    {
+                        while (CinemaBarSystem.Top==null)
+                        {
+                            CinemaBarSystem.Top = CinemaBarSystem.instance.top;
+                            Instance.WriteLine($"doing {CinemaBarSystem.Top} top!");
+                        }
+                        while (CinemaBarSystem.Bottom==null)
+                        {
+                            CinemaBarSystem.Bottom = CinemaBarSystem.instance.bottom;
+                            Instance.WriteLine($"doing {CinemaBarSystem.Top} bottom!");
+                        }
+                        Instance.WriteLine($"{CinemaBarSystem.Bottom} bottom!");
+                        Instance.WriteLine($"{CinemaBarSystem.Top} bottom!");
+
+                        CombineCardSequence combineSequence = null;
+                        yield return SceneManager.Load("CardCombine", SceneType.Temporary,
+                            scene => { combineSequence = scene.FindObjectOfType<CombineCardSequence>(); });
+                        if (combineSequence)
+                        {
+                            yield return combineSequence.Run(source, result);
+                        }
+
+                        yield return SceneManager.Unload("CardCombine");
+                        Instance.WriteLine($"Running combine sequence!");
+                        yield return deckDisplay.Run();
+                        Instance.WriteLine($"Running deck display again!");
+
+                    }
+
+                    if (active.Contains(entity))
+                    {
+                        Instance.WriteLine($"ACTIVE CARD CONTAINS");
+                        var grid = active;
+                        Instance.WriteLine($"Starting F");
+                        var index = grid.IndexOf(entity);
+                        Instance.WriteLine($"Index of card {index}");
+                        if (grid.Count <= index + 1)
+                        {
+                            var drag = CardCharmDragHandler.FindObjectOfType<CardCharmDragHandler>();
+                            if (drag)
+                            {
+                                og = false;
+                                Instance.WriteLine($"Not fit.");
+                                yield break;
+                            }
+                        }
+
+                  
+                        var d = CloneCard(grid,index,entity);
+                        yield return CombineSequence(new[] { entity.data, d.nextData }, d.clone);
+                        Instance.WriteLine($"Running combine sequence!.");
+                    }
+                    else
+                    {
+                        var reserve = deckDisplay.reserveCardsGroup.GetGrid(entity.data);
+                        if (reserve.Contains(entity))
+                        {
+                            Instance.WriteLine($"RESERVE CARD CONTAINS");
+                            var grid = reserve;
+                            Instance.WriteLine($"Starting F");
+                            var index = grid.IndexOf(entity);
+                            Instance.WriteLine($"Index of card {index}");
+                            if (grid.Count <= index + 1)
+                            {
+                                var drag = CardCharmDragHandler.FindObjectOfType<CardCharmDragHandler>();
+                                if (drag)
+                                {
+                                    // Or return to previous holder
+                                    if (drag.preHolder)
+                                    {
+                                        drag.ReturnToHolder();
+                                    }
+
+                                    // End dragging state
+                                    drag.DragEnd();
+                                    og = false;
+                                    Instance.WriteLine($"Not fit.");
+                                    yield break;
+                                }
+                            }
+
+
+                            var d = CloneCard(grid, index, entity);
+                            yield return CombineSequence(new[] { entity.data, d.nextData }, d.clone);
+                          
+                        }
+                        else
+                        {
+                            Instance.WriteLine($"NOT CONTAINS");
+                            continue;
+                        }
+                    }
+
+                    Instance.WriteLine($"END OF CARD CONTAINS");
+
+                    break;
+                }
+
+                Instance.WriteLine($"RUNNING VANILLA");
+
+                if (og)
+                    yield return original;
+            }
+
+            private static (CardData clone, CardData nextData) CloneCard(CardContainerGrid grid, int index, Entity entity)
+            {
+                var next = grid[index + 1];
+                var nextData = next.data;
+                CardData clone = entity.data.Clone();
+                clone.damage += nextData.damage;
+                clone.damage = Mathf.CeilToInt(clone.damage/2f);
+                clone.hp += nextData.hp;
+                clone.hp = Mathf.CeilToInt(clone.hp/2f);
+                if (clone.counter == 0&& !clone.IsItem && clone.damage > 1) clone.counter = clone.damage;
+                clone.counter += nextData.counter;
+                clone.counter = Mathf.CeilToInt(clone.counter/2f);
+                clone.hasAttack |= nextData.hasAttack;
+                clone.hasHealth |= nextData.hasHealth;
+                clone.startWithEffects =
+                    entity.data.startWithEffects.AddRangeToArray(next.data.startWithEffects);
+                clone.attackEffects = entity.data.attackEffects.AddRangeToArray(next.data.attackEffects);
+                clone.upgrades.AddRange(nextData.upgrades);
+                clone.forceTitle = $"{clone.title} + {nextData.title}";
+                clone.upgrades.Add(Instance.Get<CardUpgradeData>("charm_merge"));
+                return (clone, nextData);
+            }
+        }
 
 
         [HarmonyPatch(typeof(Battle),
