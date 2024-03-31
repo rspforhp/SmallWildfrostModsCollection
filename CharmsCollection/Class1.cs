@@ -103,6 +103,16 @@ namespace CharmsCollection
         {
             if (Upgrades == null)
             {
+                Traits = new();
+                Traits.Add(new TraitDataBuilder(this).Create("bifurcated").SubscribeToAfterAllBuildEvent(
+                    delegate(TraitData data)
+                    {
+                        data.Edit<TraitData, TraitDataBuilder>().WithKeyword(Get<KeywordData>("bifurcated")).WithEffects(this.Get<StatusEffectData>("bifurcated"));
+                    }));
+                Keywords = new List<KeywordDataBuilder>();
+                Keywords.Add(new KeywordDataBuilder(this).Create("bifurcated").WithTitle("Bifurcated")
+                    .WithDescription("Attack in both lanes.").WithShowName(true).WithShow(true).WithShowIcon(false));
+
                 Effects = new();
                 Effects.Add(new StatusEffectDataBuilder(this).Create<SpeedEffectData>("speed"));
                 Effects.Add(new StatusEffectDataBuilder(this).Create<BifurcatedEffectData>("bifurcated").FreeModify(
@@ -125,13 +135,14 @@ namespace CharmsCollection
                         }).WithTitle("Speed charm")
                     .WithText("Cards with speed always attack before others."));
                 Upgrades.Add(new CardUpgradeDataBuilder(this).CreateCharm("charm_bifurcated")
-                    .WithImage("charm_speed.png")
+                    .WithImage("charm_bifurcated.png")
                     .AddPool().SetConstraints(new TargetConstraintIsUnit()).SubscribeToAfterAllBuildEvent(
                         delegate(CardUpgradeData data)
                         {
-                            data.Edit<CardUpgradeData, CardUpgradeDataBuilder>()
-                                .SetEffects(
-                                    new CardData.StatusEffectStacks(this.Get<StatusEffectData>("bifurcated"), 1));
+                            data.Edit<CardUpgradeData, CardUpgradeDataBuilder>().SetTraits(
+                                new CardData.TraitStacks(this.Get<TraitData>("bifurcated"), 1));
+                            var traitData = Get<TraitData>("Aimless");
+                            traitData.overrides= traitData.overrides.AddToArray(this.Get<TraitData>("bifurcated"));
                         }).WithTitle("Bifurcated charm")
                     .WithText("Attacks in both lines."));
                 Upgrades.Add(new CardUpgradeDataBuilder(this).CreateCharm("charm_merge")
@@ -159,6 +170,7 @@ namespace CharmsCollection
                     yield return original;
                     yield break;
                 }
+
                 bool og = true;
                 Instance.WriteLine($"Attaching {__instance} to {entity}");
 
@@ -170,16 +182,18 @@ namespace CharmsCollection
 
                     IEnumerator CombineSequence(CardData[] source, CardData result)
                     {
-                        while (CinemaBarSystem.Top==null)
+                        while (CinemaBarSystem.Top == null)
                         {
                             CinemaBarSystem.Top = CinemaBarSystem.instance.top;
                             Instance.WriteLine($"doing {CinemaBarSystem.Top} top!");
                         }
-                        while (CinemaBarSystem.Bottom==null)
+
+                        while (CinemaBarSystem.Bottom == null)
                         {
                             CinemaBarSystem.Bottom = CinemaBarSystem.instance.bottom;
                             Instance.WriteLine($"doing {CinemaBarSystem.Top} bottom!");
                         }
+
                         Instance.WriteLine($"{CinemaBarSystem.Bottom} bottom!");
                         Instance.WriteLine($"{CinemaBarSystem.Top} bottom!");
 
@@ -195,7 +209,6 @@ namespace CharmsCollection
                         Instance.WriteLine($"Running combine sequence!");
                         yield return deckDisplay.Run();
                         Instance.WriteLine($"Running deck display again!");
-
                     }
 
                     if (active.Contains(entity))
@@ -216,8 +229,8 @@ namespace CharmsCollection
                             }
                         }
 
-                  
-                        var d = CloneCard(grid,index,entity);
+
+                        var d = CloneCard(grid, index, entity);
                         yield return CombineSequence(new[] { entity.data, d.nextData }, d.clone);
                         Instance.WriteLine($"Running combine sequence!.");
                     }
@@ -253,7 +266,6 @@ namespace CharmsCollection
 
                             var d = CloneCard(grid, index, entity);
                             yield return CombineSequence(new[] { entity.data, d.nextData }, d.clone);
-                          
                         }
                         else
                         {
@@ -273,18 +285,19 @@ namespace CharmsCollection
                     yield return original;
             }
 
-            private static (CardData clone, CardData nextData) CloneCard(CardContainerGrid grid, int index, Entity entity)
+            private static (CardData clone, CardData nextData) CloneCard(CardContainerGrid grid, int index,
+                Entity entity)
             {
                 var next = grid[index + 1];
                 var nextData = next.data;
                 CardData clone = entity.data.Clone();
                 clone.damage += nextData.damage;
-                clone.damage = Mathf.CeilToInt(clone.damage/2f);
+                clone.damage = Mathf.CeilToInt(clone.damage / 2f);
                 clone.hp += nextData.hp;
-                clone.hp = Mathf.CeilToInt(clone.hp/2f);
-                if (clone.counter == 0&& !clone.IsItem && clone.damage > 1) clone.counter = clone.damage;
+                clone.hp = Mathf.CeilToInt(clone.hp / 2f);
+                if (clone.counter == 0 && !clone.IsItem && clone.damage > 1) clone.counter = clone.damage;
                 clone.counter += nextData.counter;
-                clone.counter = Mathf.CeilToInt(clone.counter/2f);
+                clone.counter = Mathf.CeilToInt(clone.counter / 2f);
                 clone.hasAttack |= nextData.hasAttack;
                 clone.hasHealth |= nextData.hasHealth;
                 clone.startWithEffects =
@@ -395,11 +408,15 @@ namespace CharmsCollection
 
 
         private List<CardUpgradeDataBuilder> Upgrades;
+        private List<KeywordDataBuilder> Keywords;
+        private List<TraitDataBuilder> Traits;
         private List<StatusEffectDataBuilder> Effects;
 
         public override List<T> AddAssets<T, Y>()
         {
             var dataName = typeof(Y).Name;
+            if (dataName == nameof(TraitData)) return Traits.Cast<T>().ToList();
+            if (dataName == nameof(KeywordData)) return Keywords.Cast<T>().ToList();
             if (dataName == nameof(CardUpgradeData)) return Upgrades.Cast<T>().ToList();
             if (dataName == nameof(StatusEffectData)) return Effects.Cast<T>().ToList();
             return null;
