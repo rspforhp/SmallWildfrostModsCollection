@@ -190,12 +190,14 @@ namespace Enscribed
                 }
                 else
                 {
+                    var c=new Routine.Clump();
                     for (int i = 0; i < amount; i++)
                     {
                         var e = entities[i];
-                        Routine.Create(e.Kill(DeathType.Sacrifice)).Start();
+                       c.Add(new Hit(entity, e, 999).Process());
                     }
-                    
+                    CoroutineManager.Start(c.WaitForEnd());
+
                 }
                 slot.owner.freeAction = true;
             }
@@ -213,9 +215,9 @@ namespace Enscribed
 
         public override string GUID => "kopie.wildfrost.Enscrybed";
         public override string[] Depends => Array.Empty<string>();
-        public override string Title => "Charms collection";
+        public override string Title => "Enscryben v0.1";
 
         public override string Description =>
-            "Mod that adds some unique charms.\n\n\n\n Adds speed charm - attack before other cards.\n";
+            "Adds cards from inscryption and a blood cost system.";
     }
 }
