@@ -34,7 +34,7 @@ namespace Enscribed
         public static CardDataBuilder SetStats(this CardDataBuilder card, int? health = null, int? damage = null,
             int counter = 0, int? blood = null)
         {
-            return card.SetHealth(health).SetDamage(damage).SetCounter(counter).SetBlood(blood);
+            return card.WithValue(200).SetHealth(health).SetDamage(damage).SetCounter(counter).SetBlood(blood);
         }
     }
 
@@ -43,6 +43,83 @@ namespace Enscribed
     {
     }
 
+    public class GuardDogEffectData : StatusEffectData
+    {
+        public override void Init()
+        {
+            base.Init();
+            
+            OnCardMove+= OnOnCardPlayed;
+        }
+        public static int IndexOnBoard(Entity e)
+        {
+            var rowCount = 2;
+            var rowLength = 3;
+            for (var i = 0; i < rowLength; i++)
+            {
+                for (var j = 0; j < rowCount; j++)
+                {
+                    if (Battle.instance.GetRow(e.owner, j) is CardSlotLane row)
+                    {
+                        var slot = row.slots[i];
+                        if (slot.GetTop()==e)
+                        {
+                            return j;
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
+        private IEnumerator OnOnCardPlayed(Entity playedCard)
+        {
+            if (playedCard == target || playedCard.owner == target.owner) yield break;
+            var indexOnBoardMy = IndexOnBoard(target);
+            var indexOnBoardOf = IndexOnBoard(playedCard);
+            if (indexOnBoardOf == -1) yield break;
+            if (indexOnBoardMy != indexOnBoardOf)
+            {
+                if (Battle.instance.GetRow(target.owner, indexOnBoardOf).Count < 3)
+                    yield return new ActionMove(target, Battle.instance.GetRow(target.owner, indexOnBoardOf)).Run();
+            }
+        }
+    }
+
+    public class EvolveEffectData : StatusEffectData
+    {
+        public uint TurnAmount = 1;
+        private uint TurnsLeft;
+        public CardData EvolveInto;
+        public override void Init()
+        {
+            base.Init();
+            TurnsLeft = TurnAmount+1;
+
+            this.OnTurnEnd += OnOnTurnStart;
+        }
+
+        private IEnumerator OnOnTurnStart(Entity e)
+        {
+            //ignore the entity passed here cause its dumb??
+            e = target;
+            if (--TurnsLeft == 0)
+            {
+                
+                EnscrybedMod.Instance.WriteLine(e.ToString());
+                
+                {
+                    e.flipper.FlipDown();
+                    e.data = EvolveInto;
+                    e.statusEffects.Remove(this);
+                    yield return e.display.UpdateData(true) ;
+                    e.flipper.FlipUp();
+                }
+               
+                  
+            }
+            else { yield break; }
+        }
+    }
     public class EnscrybedMod : WildfrostMod
     {
         public EnscrybedMod(string modDirectory) : base(modDirectory)
@@ -53,7 +130,19 @@ namespace Enscribed
             {
                 //just make all their counters be 1-2
                 yield return new CardDataBuilder(this).CreateUnit("stoat", "Stoat").AddPool().SetSprites("stoat.png","card.png").SetStats(2, 1, 2, 1);
+                yield return new CardDataBuilder(this).CreateUnit("wolf_cub", "Wolf Cub").AddPool().SetSprites("wolf_cub.png","card.png").SetStats(1, 1, 2, 1).SubscribeToAfterAllBuildEvent(
+                    delegate(CardData data)
+                    {
+                        data.startWithEffects =
+                            data.startWithEffects.AddToArray(new CardData.StatusEffectStacks(this.Get<StatusEffectData>("Evolve into wolf"),1));
+                    });
                 yield return new CardDataBuilder(this).CreateUnit("wolf", "Wolf").AddPool().SetSprites("wolf.png","card.png").SetStats(2, 3, 2, 2);
+                yield return new CardDataBuilder(this).CreateUnit("blood_hound", "Blood Hound").AddPool().SetSprites("blood_hound.png","card.png").SetStats(3, 2, 2, 2).SubscribeToAfterAllBuildEvent(
+                    delegate(CardData data)
+                    {
+                        data.startWithEffects =
+                            data.startWithEffects.AddToArray(new CardData.StatusEffectStacks(this.Get<StatusEffectData>("Guarddog"),1));
+                    });
                 yield return new CardDataBuilder(this).CreateUnit("turtle", "River Snapper").AddPool().SetSprites("turtle.png","card.png").SetStats(6, 1, 2, 2);
                 yield return new CardDataBuilder(this).CreateUnit("grizzly", "Grizzly").AddPool().SetSprites("grizzly.png","card.png").SetStats(6, 4, 2, 3);
                 yield return new CardDataBuilder(this).CreateUnit("urayuli", "Urayuli").AddPool().SetSprites("urayuli.png","card.png").SetStats(7, 7, 2, 4);
@@ -76,6 +165,7 @@ namespace Enscribed
             AddAssetsEvent += (Func<IEnumerable<CardDataBuilder>>)_1;
             IEnumerable<StatusEffectDataBuilder> _4()
             {
+                yield return new StatusEffectDataBuilder(this).Create<GuardDogEffectData>("Guarddog").WithText($"When opponent moves card into a slot, go into it's lane.");
                 yield return new StatusEffectDataBuilder(this).Create<StatusEffectSummon>("Squirrel").WithText($"Summon a squirrel.").SetSummonPrefabRef().SubscribeToAfterAllBuildEvent(
                     delegate(StatusEffectData data)
                     {
@@ -83,6 +173,14 @@ namespace Enscribed
                         {
                             sum.gainTrait = Get<StatusEffectData>("Temporary Summoned");
                             sum.summonCard = Get<CardData>("squirrel");
+                        }
+                    });
+                yield return new StatusEffectDataBuilder(this).Create<EvolveEffectData>("Evolve into wolf").WithText($"Evolve into a wolf in 1 turn.").SubscribeToAfterAllBuildEvent(
+                    delegate(StatusEffectData data)
+                    {
+                        if (data is EvolveEffectData sum)
+                        {
+                            sum.EvolveInto = Get<CardData>("wolf");
                         }
                     });
             }
